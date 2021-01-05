@@ -1,18 +1,21 @@
-export interface Algorithm {
-  doAThing(): void;
-}
 
 export namespace AlgorithmRegistry {
   export type Constructor<T> = {
     new (...args: any[]): T;
     readonly prototype: T;
   };
-  const implementations: Constructor<Algorithm>[] = [] ;
-  export function GetImplementations(): Constructor<Algorithm>[] {
-    return implementations;
+  const keyVsAlgoConstructorMap = new Map<string, Constructor<Algorithm>>();
+  export function GetImplementationMap():  Map<string, Constructor<Algorithm>> {
+    return keyVsAlgoConstructorMap;
   }
-  export function register<T extends Constructor<Algorithm>>(ctor: T) {
-    implementations.push(ctor);
-    return ctor;
+  export function register(key: string){
+      return function <T extends Constructor<Algorithm>>(ctor: T) {
+        keyVsAlgoConstructorMap.set(key, ctor);
+        return ctor;
+      }
   }
 }
+
+export interface Algorithm {
+    doAThing(): void;
+  }
