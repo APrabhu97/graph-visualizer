@@ -1,0 +1,19 @@
+@import "./../../styles.scss";
+
+.graph-node{
+    width: 25px;
+    height: 25px;
+    outline: 1px solid rgb(175, 216, 248);
+    display: inline-block;
+}
+
+ .wall{
+    background-color: $headerColor;
+    animation: setWall 0.3s ;
+    animation-fill-mode: forwards;
+}
+
+@keyframes setWall {
+    from {transform:scale(0.1);}
+    to {transform: scale(1);}
+} 

@@ -14,6 +14,7 @@ interface State {
   startNode: GraphNode | null;
   targetNode: GraphNode | null;
   graph: GraphNode[][];
+  mouseIsPressed: boolean;
 }
 export default class GraphContainer extends React.Component<Props, State> {
   divElement: HTMLDivElement | null | undefined;
@@ -25,6 +26,7 @@ export default class GraphContainer extends React.Component<Props, State> {
     startNode: null,
     targetNode: null,
     graph: [],
+    mouseIsPressed: false,
   };
 
   createGraphNodes = (height: number, width: number): GraphNode[][] => {
@@ -62,15 +64,58 @@ export default class GraphContainer extends React.Component<Props, State> {
     };
   };
 
-  onNodePressed = (row: number, column: number) => {};
+  onNodePressed = (row: number, column: number) => {
+    console.log(row, column);
+    this.setState({
+      graph: this.getNewGraphWithWallToggle(this.state.graph, row, column),
+      mouseIsPressed: true,
+    });
+  };
 
-  onNodeEnter = (row: number, column: number) => {};
+  onNodeEnter = (row: number, column: number) => {
+    if (this.state.mouseIsPressed) {
+      this.setState({
+        graph: this.getNewGraphWithWallToggle(this.state.graph, row, column),
+      });
+    }
+  };
 
-  onNodeUnpressed = (row: number, column: number) => {};
+  getNewGraphWithWallToggle = (
+    graph: GraphNode[][],
+    row: number,
+    column: number
+  ): GraphNode[][] => {
+    const newGraph = graph.slice();
+    const graphNode = newGraph[row][column];
+    newGraph[row][column] = Object.assign({}, graphNode, {
+      isWall: !graphNode.isWall,
+    });
+    return newGraph;
+  };
+
+  onNodeUnpressed = (row: number, column: number) => {
+    this.setState({ mouseIsPressed: false });
+  };
+
+  componentDidMount() {
+    this.setState({
+      graph: this.createGraphNodes(
+        this.props.graphHeight,
+        this.props.graphWidth
+      ),
+      height: this.props.graphHeight,
+      width: this.props.graphWidth,
+    });
+  }
 
   render() {
-    const graphNodes = this.createGraphNodes(this.props.graphHeight, this.props.graphWidth)
-    const graph = graphNodes.map((rows, col) => {
+    if (
+      this.props.graphHeight !== this.state.height ||
+      this.props.graphWidth !== this.state.width
+    ) {
+      this.componentDidMount();
+    }
+    const graph = this.state.graph.map((rows, col) => {
       return (
         <div key={col}>
           {rows.map((row, rowIdx) => {

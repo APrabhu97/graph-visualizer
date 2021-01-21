@@ -1,6 +1,7 @@
 import React from "react";
 import GraphContainer from "../graph-container/graph-container";
-import Header from "../header/header";
+import { Header } from "../header/header";
+
 import "./app-container.css";
 
 interface Props {}
