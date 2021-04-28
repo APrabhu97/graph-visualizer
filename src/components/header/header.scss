@@ -1,0 +1,23 @@
+@import "./../../styles.scss";
+
+.header-component{
+    background: $headerColor;
+    height: 100%;
+    position: relative;
+}
+
+.dropdown-container{
+    position: absolute;
+    bottom: 0px;
+    width: 120px;
+    margin-left: 12px;
+}
+
+.visualize-button{
+    position: absolute;
+    right: 32px;
+    bottom: 0px;
+    color: white;
+    padding: 12px;
+    background: $selectedColor;
+}
