@@ -1,21 +1,20 @@
-import { useState } from "react";
 import { DropdownComponent } from "../dropdown/dropdown-component";
 import { Algorithm, AlgorithmRegistry } from "./../../algorithms";
 import "./header.scss";
-
-export function Header() {
+interface Props {
+  onAlgorithmSelected: (alorithm: Algorithm) => void;
+  selectedAlgorithm: Algorithm | undefined;
+  executeAlgorithm: () => void;
+}
+export function Header(props: Props) {
   const keyVsAlgoMap = AlgorithmRegistry.GetImplementationMap();
 
   const onAlgorithmSelected = (data: { key: string }) => {
     if (keyVsAlgoMap.has(data.key)) {
       const algorithm = keyVsAlgoMap.get(data.key)!;
-      setSelectedAlgorithm(algorithm);
-      algorithm.doAThing();
+      props.onAlgorithmSelected(algorithm);
     }
   };
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
-    null
-  );
 
   const dropdownOptions: {
     label: string;
@@ -41,8 +40,8 @@ export function Header() {
           onSelectOption={onAlgorithmSelected}
         />
       </div>
-      <button className="visualize-button">
-        Visualize {selectedAlgorithm?.getLabel()}
+      <button className="visualize-button" onClick={() => props.executeAlgorithm()}>
+        Visualize {props.selectedAlgorithm?.getLabel()}
       </button>
     </div>
   );

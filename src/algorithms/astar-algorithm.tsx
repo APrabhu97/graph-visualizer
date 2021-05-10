@@ -1,16 +1,15 @@
+import { GraphNode } from "../components/graph-node/graph-node-model";
 import { AlgorithmRegistry } from "./algorithm-registry";
 
 @AlgorithmRegistry.register("astar")
-export class AstarAlgorithm{
-    label:string;
-    doAThing(){
-        console.log("reached astar");
-    }
-    constructor(){
-        this.label = "A* Search";
-    }
+export class AstarAlgorithm {
+  label = "A* Search";
 
-    getLabel(){
-        return this.label;
-    }
+  getLabel() {
+    return this.label;
+  }
+
+  getGraphWithSelectedPath(graph: GraphNode[][]): GraphNode[][] {
+    return graph;
+  }
 }

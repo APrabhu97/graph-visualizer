@@ -6,34 +6,8 @@
   display: inline-block;
 }
 
-.wall {
-  background-color: $headerColor;
-  height: 100%;
-  animation: setWall 0.3s;
-  animation-fill-mode: forwards;
-}
 
-.start-node {
-  background-image: url(./../../assets/triangletwo-right.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 100%;
-}
 
-.target-node {
-  background-image: url(./../../assets/circle.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 100%;
-}
 
-@keyframes setWall {
-  from {
-    transform: scale(0.1);
-  }
-  to {
-    transform: scale(1);
-  }
-}
+
+

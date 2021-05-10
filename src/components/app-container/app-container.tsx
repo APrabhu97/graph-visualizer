@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Algorithm } from "../../algorithms";
 import { GraphContainer } from "../graph-container/graph-container";
 import { Header } from "../header/header";
 import "./app-container.css";
@@ -11,54 +12,59 @@ interface State {
   width: number;
 }
 
-export default class AppContainer extends React.Component<Props, State> {
-  headerElement: HTMLElement | undefined | null;
-  state: Readonly<State> = {
+export default function AppContainer(props: Props) {
+  // const headerElement: HTMLElement | undefined | null;
+  /*   state: Readonly<State> = {
     windowHeight: 0,
     headerHeight: 0,
     width: 0,
-  };
-  componentDidMount() {
-    this.updateDimensions();
-  }
+  }; */
+  const [windowHeight, setWindowHeight] = useState<number>(0);
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+  const [headerHeight, setHeaderHeight] = useState<number | undefined>(0);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>();
+  const [canExecuteAlgorithm, setExecuteAlgorithm] = useState(false);
 
-  updateDimensions = () => {
-    const headerHeight = this.headerElement?.clientHeight;
-    const windowHeight = window.innerHeight;
-    const width = window.innerWidth;
+  const updateDimensions = () => {
+    //  const currentHeaderHeight = headerElement?.clientHeight;
+    const currentWindowHeight = window.innerHeight;
+    const currentWindowWidth = window.innerWidth;
     if (
-      this.state.windowHeight !== windowHeight ||
-      this.state.width !== width
+      windowHeight !== currentWindowHeight ||
+      windowWidth !== currentWindowWidth
     ) {
-      this.setState({
-        headerHeight: headerHeight,
-        width: width,
-        windowHeight: windowHeight,
-      });
+      setWindowHeight(currentWindowHeight);
+      setWindowWidth(currentWindowWidth);
+      //   setHeaderHeight(currentHeaderHeight);
     }
   };
 
-  render() {
-    const graph = this.state.windowHeight ? (
-      <div className="graph-container">
-        <GraphContainer
-          graphHeight={this.state.windowHeight - this.state.headerHeight!}
-          graphWidth={this.state.width}
+  useEffect(() => updateDimensions(), []);
+
+  const graph = windowHeight ? (
+    <div className="graph-container">
+      <GraphContainer
+        graphHeight={windowHeight - headerHeight!}
+        graphWidth={windowWidth}
+        selectedAlgorithm={selectedAlgorithm}
+        canExecuteAlgorithm={canExecuteAlgorithm}
+        setExe={() => setExecuteAlgorithm(false)}
+      />
+    </div>
+  ) : null;
+  return (
+    <div className="app-container">
+      <div
+        className="header-container"
+        ref={(headerElement) => setHeaderHeight(headerElement?.clientHeight)}
+      >
+        <Header
+          onAlgorithmSelected={(algorithm) => setSelectedAlgorithm(algorithm)}
+          selectedAlgorithm={selectedAlgorithm}
+          executeAlgorithm={() => setExecuteAlgorithm(true)}
         />
       </div>
-    ) : null;
-    return (
-      <div className="app-container">
-        <div
-          className="header-container"
-          ref={(headerElement) => {
-            this.headerElement = headerElement;
-          }}
-        >
-          <Header />
-        </div>
-        {graph}
-      </div>
-    );
-  }
+      {graph}
+    </div>
+  );
 }

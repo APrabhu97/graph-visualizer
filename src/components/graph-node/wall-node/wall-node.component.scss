@@ -1,0 +1,17 @@
+@import "./../../../styles.scss";
+
+.wall {
+  background-color: $headerColor;
+  height: 100%;
+  animation: setWall 0.3s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes setWall {
+  from {
+    transform: scale(0.1);
+  }
+  to {
+    transform: scale(1);
+  }
+}

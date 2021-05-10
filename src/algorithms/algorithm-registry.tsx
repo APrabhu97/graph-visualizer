@@ -1,3 +1,4 @@
+import { GraphNode } from "../components/graph-node/graph-node-model";
 
 export namespace AlgorithmRegistry {
   export type Constructor<T> = {
@@ -19,6 +20,6 @@ export namespace AlgorithmRegistry {
 }
 
 export interface Algorithm {
-    doAThing(): void;
+    getGraphWithSelectedPath(graphNodes: GraphNode[][]): GraphNode[][];
     getLabel(): string;
   }

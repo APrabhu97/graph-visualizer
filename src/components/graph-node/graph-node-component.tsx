@@ -1,6 +1,11 @@
 import React from "react";
 import "./graph-node-component.scss";
 import { GraphNode, NodeType } from "./graph-node-model";
+import SelectedPathNode from "./selected-path-node/selected-path-node.component";
+import StartNode from "./start-node/start-node.component";
+import TargetNode from "./target-node/target-node.component";
+import VisitedNode from "./visited-node/visited-node.component";
+import WallNode from "./wall-node/wall-node.component";
 
 interface Props {
   nodeData: GraphNode;
@@ -8,9 +13,11 @@ interface Props {
 
 export function GraphNodeComponent(props: Props) {
   const typeTemplateMap = new Map<NodeType, any>()
-    .set("start", <div className="start-node"></div>)
-    .set("target", <div className="target-node"></div>)
-    .set("wall", <div className="wall"></div>);
+    .set("start", <StartNode />)
+    .set("target", <TargetNode />)
+    .set("wall", <WallNode />)
+    .set("shortestPath", <SelectedPathNode />)
+    .set("visited", <VisitedNode />);
 
   const {
     id,

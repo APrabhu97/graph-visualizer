@@ -1,4 +1,6 @@
-import React, { useRef, useState } from "react";
+import { cloneDeep } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
+import { Algorithm } from "../../algorithms";
 import { GraphNodeComponent } from "../graph-node/graph-node-component";
 import { GraphNode, NodeType } from "../graph-node/graph-node-model";
 import "./graph-container.css";
@@ -6,6 +8,9 @@ import "./graph-container.css";
 interface Props {
   graphHeight: number;
   graphWidth: number;
+  selectedAlgorithm: Algorithm | undefined;
+  canExecuteAlgorithm: boolean;
+  setExe: () => void;
 }
 
 export function GraphContainer(props: Props) {
@@ -20,15 +25,13 @@ export function GraphContainer(props: Props) {
     isMousePressedRef.current = setPressed;
     _setMousePressed(setPressed);
   };
-
+  const exe = useRef(props.canExecuteAlgorithm);
   const [startNodeId] = useState<string | undefined>(
     `node-${Math.floor(maxRows / 2)}-${maxCols - Math.floor(maxCols * 0.9)}`
   );
   const [targetNodeId] = useState<string | undefined>(
     `node-${Math.floor(maxRows / 2)}-${maxCols - Math.floor(maxCols * 0.1)}`
   );
-  console.log(startNodeId, targetNodeId);
-
   const getNodeId = (row: number, column: number): string => {
     return `node-${row}-${column}`;
   };
@@ -120,11 +123,21 @@ export function GraphContainer(props: Props) {
         return "wall";
     }
   };
+  useEffect(() => {
+    if (props.canExecuteAlgorithm) {
+      props.setExe();
+      const g = props.selectedAlgorithm!.getGraphWithSelectedPath(
+        cloneDeep(graph)
+      );
+      setGraph(g);
+      console.log(g);
+    }
+  }, [props.canExecuteAlgorithm]);
 
   const graphComponent = graph.map((rows, col) => {
     return (
       <div key={col}>
-        {rows.map((row, rowIdx) => {
+        {rows.map((row) => {
           return (
             <GraphNodeComponent
               key={row.id}
