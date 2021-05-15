@@ -1,51 +1,61 @@
+import { flatMap } from "lodash";
 import { GraphNode } from "../components/graph-node/graph-node-model";
+import { BinaryMinHeap } from "../utils/binary-min-heap";
 import { AlgorithmRegistry } from "./algorithm-registry";
 
 @AlgorithmRegistry.register("dijkstras")
 export class DijkstrasAlgorithm {
   label = "Dijkstra's Algorithm";
-  graph: GraphNode[][] | undefined;
-  maxRows: number | undefined;
-  maxCols: number | undefined;
 
-  getGraphWithSelectedPath(graph: GraphNode[][]): GraphNode[][] {
-    const shortestPathSet: GraphNode[] = [];
+  getUpdatedGrid(graph: GraphNode[][]): GraphNode[] {
+    const orderedVisitedNodes: GraphNode[] = [];
     let startNode: GraphNode;
     let targetNode: GraphNode;
-    let targetFound = false;
-    this.graph = graph;
-    this.maxRows = graph.length - 1;
-    this.maxCols = graph[0].length - 1;
     graph.forEach((row) => {
       startNode = startNode || row.find((node) => node.type === "start")!;
       targetNode = targetNode || row.find((node) => node.type === "target")!;
     });
+    const unorderedNodes = flatMap(graph);
     startNode!.distance = 0;
-    let currentNode = startNode!;
-    while (!targetFound) {
-      this.reccCalcDistance(currentNode, currentNode);
-      targetFound = targetNode!.distance !== Infinity;
+    const minHeap = new BinaryMinHeap<GraphNode>(
+      "distance",
+      "id",
+      unorderedNodes
+    );
+    while (minHeap.length()) {
+      const closestNode = minHeap.getMin();
+      if (closestNode === targetNode!) break;
+      if (closestNode!.distance === Infinity) break;
+      if(closestNode?.type === 'wall')continue;
+      closestNode!.type = ["target", "start"].includes(closestNode!.type!)
+        ? closestNode!.type
+        : "visited";
+      const neighbors = this.updateNeighbors(graph, closestNode!);
+      neighbors.forEach((node) => minHeap.delete(node));
+      neighbors.forEach((node) => minHeap.insert(node));
+      orderedVisitedNodes.push(closestNode!);
+      minHeap.popMin();
     }
-    return graph;
+    return orderedVisitedNodes;
   }
 
-  private reccCalcDistance(node: GraphNode, prevNode: GraphNode) {
-    if (node && node.type !== "visited") {
-      node.distance = prevNode.distance + 1;
-      node.type = ['start','target'].includes(node.type!) ? node.type : "visited";
-      if (node.row > 0) {
-        this.reccCalcDistance(this.graph![node.row - 1][node.column], node);
-      }
-      if (node.column > 0) {
-        this.reccCalcDistance(this.graph![node.row][node.column - 1], node);
-      }
-      if (node.row < this.maxRows!) {
-        this.reccCalcDistance(this.graph![node.row + 1][node.column], node);
-      }
-      if (node.column < this.maxCols!) {
-        this.reccCalcDistance(this.graph![node.row][node.column + 1], node);
-      }
-    }
+  updateNeighbors(graph: GraphNode[][], currentNode: GraphNode): GraphNode[] {
+    const neighbors = this.getNeighbors(graph, currentNode);
+    neighbors.forEach((node) => {
+      node.distance = currentNode.distance + 1;
+      node.previousNode = currentNode;
+    });
+    return neighbors;
+  }
+
+  getNeighbors(graph: GraphNode[][], currentNode: GraphNode): GraphNode[] {
+    const neighbors: GraphNode[] = [];
+    const { column, row } = currentNode;
+    if (row > 0) neighbors.push(graph[row - 1][column]);
+    if (column > 0) neighbors.push(graph[row][column - 1]);
+    if (graph.length - 1 > row) neighbors.push(graph[row + 1][column]);
+    if (graph[0].length - 1 > column) neighbors.push(graph[row][column + 1]);
+    return neighbors.filter((node) => node.type !== "visited");
   }
 
   getLabel() {

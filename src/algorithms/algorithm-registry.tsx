@@ -20,6 +20,7 @@ export namespace AlgorithmRegistry {
 }
 
 export interface Algorithm {
-    getGraphWithSelectedPath(graphNodes: GraphNode[][]): GraphNode[][];
+    getUpdatedGrid(graphNodes: GraphNode[][]): GraphNode[];
+    getSelectedPath?(graphNodes: GraphNode[]): GraphNode[];
     getLabel(): string;
   }

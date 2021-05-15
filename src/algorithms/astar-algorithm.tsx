@@ -9,7 +9,7 @@ export class AstarAlgorithm {
     return this.label;
   }
 
-  getGraphWithSelectedPath(graph: GraphNode[][]): GraphNode[][] {
-    return graph;
+  getUpdatedGrid(graph: GraphNode[][]): GraphNode[]{
+    return [];
   }
 }

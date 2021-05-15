@@ -1,5 +1,6 @@
 import { cloneDeep } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
+import { setTimeout } from "timers";
 import { Algorithm } from "../../algorithms";
 import { GraphNodeComponent } from "../graph-node/graph-node-component";
 import { GraphNode, NodeType } from "../graph-node/graph-node-model";
@@ -18,6 +19,12 @@ export function GraphContainer(props: Props) {
   const NODE_WIDTH = 25;
   const maxCols = Math.floor(props.graphWidth / NODE_WIDTH);
   const maxRows = Math.floor(props.graphHeight / NODE_HEIGHT);
+  const startNodeId = `node-${Math.floor(maxRows / 2)}-${
+    maxCols - Math.floor(maxCols * 0.9)
+  }`;
+  const targetNodeId = `node-${Math.floor(maxRows / 2)}-${
+    maxCols - Math.floor(maxCols * 0.1)
+  }`;
 
   const [isMousePressed, _setMousePressed] = useState<boolean>(false);
   const isMousePressedRef = useRef(isMousePressed);
@@ -25,13 +32,7 @@ export function GraphContainer(props: Props) {
     isMousePressedRef.current = setPressed;
     _setMousePressed(setPressed);
   };
-  const exe = useRef(props.canExecuteAlgorithm);
-  const [startNodeId] = useState<string | undefined>(
-    `node-${Math.floor(maxRows / 2)}-${maxCols - Math.floor(maxCols * 0.9)}`
-  );
-  const [targetNodeId] = useState<string | undefined>(
-    `node-${Math.floor(maxRows / 2)}-${maxCols - Math.floor(maxCols * 0.1)}`
-  );
+
   const getNodeId = (row: number, column: number): string => {
     return `node-${row}-${column}`;
   };
@@ -119,20 +120,32 @@ export function GraphContainer(props: Props) {
         return "start";
       case "target":
         return "target";
+      case "visited":
+        return "visited";
       default:
         return "wall";
     }
   };
+  const { canExecuteAlgorithm, selectedAlgorithm, setExe } = props;
   useEffect(() => {
-    if (props.canExecuteAlgorithm) {
-      props.setExe();
-      const g = props.selectedAlgorithm!.getGraphWithSelectedPath(
-        cloneDeep(graph)
-      );
-      setGraph(g);
-      console.log(g);
+    if (canExecuteAlgorithm) {
+      setExe();
+      const updatedGraph = selectedAlgorithm!.getUpdatedGrid(cloneDeep(graph));
+      const selectedPath = selectedAlgorithm!.getSelectedPath!(updatedGraph)!;
+      updatedGraph.forEach((node) => {
+        setTimeout(() => {
+          graph[node.row][node.column] = node;
+          setGraph(cloneDeep(graph));
+        }, 5);
+      });
+      selectedPath.forEach((node) => {
+        setTimeout(() => {
+          graph[node.row][node.column] = node;
+          setGraph(cloneDeep(graph));
+        }, 5);
+      });
     }
-  }, [props.canExecuteAlgorithm]);
+  }, [canExecuteAlgorithm, selectedAlgorithm, setExe, graph]);
 
   const graphComponent = graph.map((rows, col) => {
     return (

@@ -4,7 +4,7 @@ export interface GraphNode {
   row: number;
   type: NodeType | null;
   distance: number;
-  previousNode: Node | null;
+  previousNode: GraphNode | null;
   onMouseDown: (row: number, column: number) => void;
   onMouseEnter: (row: number, column: number) => void;
   onMouseUp: (row: number, column: number) => void;
